@@ -39,13 +39,19 @@ from typing import (
     Union,
 )
 
-from typing_extensions import NoReturn
+try:
+    from typing import NoReturn
+except ImportError:
+    from typing_extensions import NoReturn
 
 HAVE_ANNOTATED = sys.version_info >= (3, 7, 0)
 
 if HAVE_ANNOTATED:
     # Ignoring errors here as typing_extensions stub doesn't know about those things yet
-    from typing_extensions import _AnnotatedAlias, Annotated, get_type_hints  # type: ignore
+    try:
+        from typing import _AnnotatedAlias, Annotated, get_type_hints  # type: ignore
+    except ImportError:
+        from typing_extensions import _AnnotatedAlias, Annotated, get_type_hints  # type: ignore
 else:
 
     class Annotated:  # type: ignore
@@ -110,7 +116,7 @@ if HAVE_ANNOTATED:
     InjectT = TypeVar('InjectT')
     Inject = Annotated[InjectT, _inject_marker]
     """An experimental way to declare injectable dependencies utilizing a `PEP 593`_ implementation
-    in `typing_extensions`.
+    in Python 3.9 and backported to Python 3.7 in `typing_extensions`.
 
     Those two declarations are equivalent::
 
@@ -150,7 +156,7 @@ if HAVE_ANNOTATED:
 
     NoInject = Annotated[InjectT, _noinject_marker]
     """An experimental way to declare noninjectable dependencies utilizing a `PEP 593`_ implementation
-    in `typing_extensions`.
+    in Python 3.9 and backported to Python 3.7 in `typing_extensions`.
 
     Since :func:`inject` declares all function's parameters to be injectable there needs to be a way
     to opt out of it. This has been provided by :func:`noninjectable` but `noninjectable` suffers from
